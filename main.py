@@ -17,13 +17,19 @@ PATCH_NOTE = (
 MAX_CHARS = 160
 
 
-def main() -> None:
-    note = PATCH_NOTE.strip()
+def validate_note(note: str) -> str:
+    """Return the note unchanged, rejecting empty or over-long text."""
+    note = note.strip()
     if not note:
         raise SystemExit("patch note is empty")
     if len(note) > MAX_CHARS:
-        raise SystemExit(f"patch note is {len(note)} chars, over the 160 limit")
-    out_dir = "/output"
+        raise SystemExit(f"patch note is {len(note)} chars, over the {MAX_CHARS} limit")
+    return note
+
+
+def main() -> None:
+    note = validate_note(PATCH_NOTE)
+    out_dir = os.environ.get("PATCH_NOTES_OUTPUT_DIR", "/output")
     os.makedirs(out_dir, exist_ok=True)
     with open(os.path.join(out_dir, "entry.txt"), "w", encoding="utf-8") as f:
         f.write(note + "\n")
